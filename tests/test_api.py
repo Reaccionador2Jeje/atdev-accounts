@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import json
 import re
 
 import pytest
@@ -69,6 +70,45 @@ def test_health_and_frontend(client):
     assert client.get("/account.html").status_code == 200
     assert client.get("/app.js").status_code == 200
     assert client.get("/.env").status_code == 404
+
+
+def test_seed_clients_from_env(tmp_path, monkeypatch):
+    seeds = [
+        {
+            "client_id": "openweb-linux",
+            "name": "OpenWeb Linux",
+            "redirect_uris": ["https://example.github.io/openweb/oauth/callback"],
+            "scopes": ["openid", "profile", "email", "offline_access"],
+            "public": True,
+        },
+        {
+            "client_id": "librecoding",
+            "name": "LibreCoding",
+            "redirect_uris": ["https://example.github.io/librecoding/oauth/callback"],
+            "scopes": ["openid", "profile", "email"],
+            "public": True,
+        },
+    ]
+    monkeypatch.setenv("DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("APP_ORIGIN", "http://testserver")
+    monkeypatch.setenv("SECURE_COOKIES", "false")
+    monkeypatch.setenv("ADMIN_TOKEN", "test-admin-token")
+    monkeypatch.setenv("DEFAULT_CLIENT_REDIRECT_URIS", "")
+    monkeypatch.setenv("SEED_CLIENTS", json.dumps(seeds))
+
+    app = create_app(Settings.from_env())
+    with TestClient(app) as test_client:
+        response = test_client.get(
+            "/api/admin/clients", headers={"X-Admin-Token": "test-admin-token"}
+        )
+        assert response.status_code == 200
+        clients = {item["client_id"]: item for item in response.json()}
+        assert set(clients) == {"openweb-linux", "librecoding"}
+        assert clients["openweb-linux"]["redirect_uris"] == [
+            "https://example.github.io/openweb/oauth/callback"
+        ]
+        assert clients["librecoding"]["scopes"] == ["openid", "profile", "email"]
+        assert clients["librecoding"]["is_confidential"] is False
 
 
 def test_register_login_me_logout(client):

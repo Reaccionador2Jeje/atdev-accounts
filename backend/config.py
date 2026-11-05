@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import json
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -29,6 +31,19 @@ def _csv(name: str) -> tuple[str, ...]:
     return tuple(part.strip() for part in raw.split(",") if part.strip())
 
 
+def _clients(name: str) -> tuple[dict[str, Any], ...]:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return ()
+    try:
+        value = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{name} must be valid JSON") from exc
+    if not isinstance(value, list):
+        raise ValueError(f"{name} must be a JSON array")
+    return tuple(item for item in value if isinstance(item, dict))
+
+
 @dataclass(frozen=True)
 class Settings:
     app_name: str
@@ -53,6 +68,7 @@ class Settings:
     default_client_name: str
     default_client_redirect_uris: tuple[str, ...]
     default_client_scopes: tuple[str, ...]
+    seed_clients: tuple[dict[str, Any], ...]
     allowed_origins: tuple[str, ...]
 
     @property
@@ -110,5 +126,6 @@ class Settings:
             default_client_name=os.environ.get("DEFAULT_CLIENT_NAME", "OpenWeb Linux"),
             default_client_redirect_uris=default_redirects,
             default_client_scopes=default_scopes,
+            seed_clients=_clients("SEED_CLIENTS"),
             allowed_origins=allowed_origins,
         )

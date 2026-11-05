@@ -16,3 +16,6 @@ services:
         value: "true"
       - key: DATA_DIR
         value: /data
+      - key: SEED_CLIENTS
+        value: >-
+          [{"client_id":"openweb-linux","name":"OpenWeb Linux","redirect_uris":["https://Reaccionador2Jeje.github.io/openweb-linux/oauth/callback"],"scopes":["openid","profile","email","offline_access"],"public":true},{"client_id":"librecoding","name":"LibreCoding","redirect_uris":["https://Reaccionador2Jeje.github.io/LibreCoding/oauth/callback"],"scopes":["openid","profile","email","offline_access"],"public":true}]

@@ -101,6 +101,21 @@ Todas las variables son opcionales salvo `ADMIN_TOKEN` en producción.
 | `ACCESS_TOKEN_TTL_MINUTES` | `60` | Vida del access token OIDC |
 | `REFRESH_TOKEN_TTL_DAYS` | `30` | Vida del refresh token |
 | `DEFAULT_CLIENT_*` | ver `.env.example` | Cliente OAuth sembrado al arrancar |
+| `SEED_CLIENTS` | vacío | Lista JSON de clientes OAuth adicionales sembrados al arrancar |
+
+`SEED_CLIENTS` acepta un array JSON de clientes que se crean al arrancar si aún no existen. Cada elemento admite `client_id`, `name`, `redirect_uris`, `scopes`, `public` y, para clientes confidenciales, `client_secret`. Es útil en despliegues con disco efímero:
+
+```json
+[
+  {
+    "client_id": "openweb-linux",
+    "name": "OpenWeb Linux",
+    "redirect_uris": ["https://example.github.io/openweb-linux/oauth/callback"],
+    "scopes": ["openid", "profile", "email", "offline_access"],
+    "public": true
+  }
+]
+```
 
 ## Conectar un servicio por SSO (OIDC)
 
