@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f1026">
+  <title>Your account — AtDev Accounts</title>
+  <meta name="description" content="Manage your AtDev account, sessions, connected apps and API keys.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="icon" type="image/svg+xml" href="./assets/logo.svg">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./index.html">
+        <img src="./assets/logo.svg" alt="AtDev" width="28" height="28">
+        <span class="brand-name">AtDev Accounts</span>
+      </a>
+      <nav class="header-nav">
+        <a href="./index.html#services">Services</a>
+        <a href="./index.html#security">Security</a>
+      </nav>
+      <div class="header-actions" id="header-actions">
+        <a class="btn primary" href="./index.html">Sign in</a>
+      </div>
+      <div class="header-user hidden" id="header-user">
+        <div class="user-chip">
+          <span class="user-avatar" id="user-avatar">A</span>
+          <span class="user-name" id="user-name">Account</span>
+        </div>
+        <button class="btn ghost small" id="sign-out">Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard" id="dashboard" hidden>
+    <section class="dash-hero">
+      <div class="profile-row dashboard-profile">
+        <div class="profile-avatar large" id="profile-avatar">A</div>
+        <div>
+          <h1 id="profile-name">Your account</h1>
+          <p class="muted" id="profile-email"></p>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <span class="stat-value" id="stat-sessions">0</span>
+          <span class="stat-label">Active sessions</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="stat-keys">0</span>
+          <span class="stat-label">API keys</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="stat-connections">0</span>
+          <span class="stat-label">Connected apps</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="dashboard-grid">
+      <section class="panel">
+        <header class="panel-header">
+          <h2>Profile</h2>
+          <p>Update the name shown across AtDev services.</p>
+        </header>
+        <form id="profile-form" class="stack-form">
+          <div class="form-field">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required maxlength="80">
+          </div>
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" disabled>
+          </div>
+          <div class="form-message" id="profile-message"></div>
+          <button class="btn primary" type="submit">Save profile</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <header class="panel-header">
+          <h2>Password</h2>
+          <p>Changing your password signs out all other sessions.</p>
+        </header>
+        <form id="password-form" class="stack-form">
+          <div class="form-field">
+            <label for="current-password">Current password</label>
+            <input id="current-password" name="current_password" type="password" autocomplete="current-password" required>
+          </div>
+          <div class="form-field">
+            <label for="new-password">New password</label>
+            <input id="new-password" name="new_password" type="password" autocomplete="new-password" minlength="8" required>
+          </div>
+          <div class="form-message" id="password-message"></div>
+          <button class="btn primary" type="submit">Change password</button>
+        </form>
+      </section>
+
+      <section class="panel panel-wide">
+        <header class="panel-header">
+          <h2>Sessions</h2>
+          <p>Devices currently signed in to your account.</p>
+        </header>
+        <div class="list" id="sessions-list"></div>
+        <div class="panel-actions">
+          <button class="btn ghost" id="revoke-other-sessions" type="button">Sign out other sessions</button>
+        </div>
+      </section>
+
+      <section class="panel panel-wide">
+        <header class="panel-header">
+          <h2>API keys</h2>
+          <p>Use API keys to call AtDev services from scripts. Keys are shown only once.</p>
+        </header>
+        <form id="api-key-form" class="inline-form">
+          <input id="api-key-name" name="name" type="text" placeholder="Key name (e.g. laptop-cli)" maxlength="80" required>
+          <button class="btn primary" type="submit">Create key</button>
+        </form>
+        <div class="form-message" id="api-key-message"></div>
+        <div class="new-key hidden" id="new-key">
+          <p>Copy this key now. You will not be able to see it again.</p>
+          <div class="new-key-row">
+            <code id="new-key-value"></code>
+            <button class="btn ghost small" id="copy-key" type="button">Copy</button>
+          </div>
+        </div>
+        <div class="list" id="api-keys-list"></div>
+      </section>
+
+      <section class="panel panel-wide">
+        <header class="panel-header">
+          <h2>Connected apps</h2>
+          <p>Apps you have authorized with your AtDev account.</p>
+        </header>
+        <div class="list" id="connections-list"></div>
+      </section>
+
+      <section class="panel panel-wide danger-zone">
+        <header class="panel-header">
+          <h2>Delete account</h2>
+          <p>This permanently deletes your account, sessions, API keys and connected apps.</p>
+        </header>
+        <form id="delete-form" class="inline-form">
+          <input id="delete-password" type="password" placeholder="Confirm with your password" autocomplete="current-password" required>
+          <button class="btn danger" type="submit">Delete my account</button>
+        </form>
+        <div class="form-message" id="delete-message"></div>
+      </section>
+    </div>
+  </main>
+
+  <section class="dashboard signed-out" id="signed-out" hidden>
+    <div class="panel">
+      <h1>Sign in required</h1>
+      <p class="muted">You need to sign in to manage your AtDev account.</p>
+      <a class="btn primary" href="./index.html?next=%2Faccount.html">Go to sign in</a>
+    </div>
+  </section>
+
+  <script src="./account.js"></script>
+</body>
+</html>

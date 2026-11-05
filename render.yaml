@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: atdev-accounts
+    runtime: docker
+    plan: free
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: ADMIN_TOKEN
+        generateValue: true
+      - key: SECURE_COOKIES
+        value: "true"
+      - key: TRUST_PROXY
+        value: "true"
+      - key: ALLOW_REGISTRATION
+        value: "true"
+      - key: DATA_DIR
+        value: /data

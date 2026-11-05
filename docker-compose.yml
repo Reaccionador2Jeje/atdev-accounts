@@ -1,0 +1,14 @@
+services:
+  accounts:
+    build: .
+    container_name: atdev-accounts
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - atdev-data:/data
+
+volumes:
+  atdev-data:
