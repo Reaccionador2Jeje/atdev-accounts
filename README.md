@@ -311,3 +311,7 @@ Cubren registro/login, sesiones, API keys, CSRF, borrado de cuenta, flujo OIDC c
 ## Licencia
 
 Proyecto privado de AtDev. Ajusta la licencia según tus necesidades.
+
+## Walletie identity roadmap
+
+AtDev Accounts is the target OIDC/SSO provider for future Walletie-wide identity, but Walletie V1 currently accepts AtDev Cloud HS256 tokens only. See [the Walletie identity roadmap](docs/WALLETIE_INTEGRATION.md).
