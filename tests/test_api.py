@@ -389,6 +389,15 @@ def test_oauth_requires_login_and_pkce(client, public_client):
     assert "error=consent_required" in error_redirect.headers["location"]
 
 
+def test_swagger_docs_allowed_by_content_security_policy(client):
+    response = client.get("/api/docs")
+    assert response.status_code == 200
+    assert "https://cdn.jsdelivr.net" in response.text
+    csp = response.headers["content-security-policy"]
+    assert "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net" in csp
+    assert "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net" in csp
+
+
 def test_discovery_jwks_and_security_headers(client):
     discovery = client.get("/.well-known/openid-configuration")
     assert discovery.status_code == 200
