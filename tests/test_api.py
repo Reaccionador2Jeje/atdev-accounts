@@ -88,6 +88,13 @@ def test_seed_clients_from_env(tmp_path, monkeypatch):
             "scopes": ["openid", "profile", "email"],
             "public": True,
         },
+        {
+            "client_id": "memingo-ide-android",
+            "name": "Memingo IDE for Android",
+            "redirect_uris": ["dev.atdev.memingoide://oauth/callback"],
+            "scopes": ["openid", "profile", "email", "offline_access"],
+            "public": True,
+        },
     ]
     monkeypatch.setenv("DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("APP_ORIGIN", "http://testserver")
@@ -103,12 +110,19 @@ def test_seed_clients_from_env(tmp_path, monkeypatch):
         )
         assert response.status_code == 200
         clients = {item["client_id"]: item for item in response.json()}
-        assert set(clients) == {"openweb-linux", "librecoding"}
+        assert set(clients) == {"openweb-linux", "librecoding", "memingo-ide-android"}
         assert clients["openweb-linux"]["redirect_uris"] == [
             "https://example.github.io/openweb/oauth/callback"
         ]
         assert clients["librecoding"]["scopes"] == ["openid", "profile", "email"]
         assert clients["librecoding"]["is_confidential"] is False
+        assert clients["memingo-ide-android"]["redirect_uris"] == [
+            "dev.atdev.memingoide://oauth/callback"
+        ]
+        assert clients["memingo-ide-android"]["scopes"] == [
+            "openid", "profile", "email", "offline_access"
+        ]
+        assert clients["memingo-ide-android"]["is_confidential"] is False
 
 
 def test_register_login_me_logout(client):
