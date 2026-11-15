@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -167,8 +168,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
     @app.get("/healthz", include_in_schema=False)
-    def healthz() -> dict[str, str]:
-        return {"status": "ok", "version": __version__}
+    def healthz(request: Request) -> JSONResponse:
+        # Check the actual SQLite database, not only whether the web process
+        # started. This lets the hosting platform detect an unavailable or
+        # incorrectly mounted DATA_DIR before routing sign-in traffic.
+        conn = None
+        try:
+            conn = connect(request.app.state.settings.db_path)
+            conn.execute("SELECT 1 FROM users LIMIT 1").fetchone()
+            return JSONResponse({"status": "ok", "database": "ok", "version": __version__})
+        except sqlite3.Error:
+            return JSONResponse(
+                {"status": "unavailable", "database": "error", "version": __version__},
+                status_code=503,
+            )
+        finally:
+            if conn is not None:
+                conn.close()
 
     @app.get("/favicon.ico", include_in_schema=False)
     def favicon() -> FileResponse:
