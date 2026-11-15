@@ -141,6 +141,35 @@ def test_register_login_me_logout(client):
     assert client.get("/api/auth/me").status_code == 200
 
 
+def test_login_email_is_case_insensitive(client, user):
+    response = client.post(
+        "/api/auth/login",
+        json={"email": "ADA@EXAMPLE.COM", "password": "correct horse"},
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["email"] == "ada@example.com"
+    assert "atdev_session" in response.cookies
+
+
+def test_session_cookie_is_http_only_and_secure_on_https(tmp_path, monkeypatch):
+    monkeypatch.setenv("DATA_DIR", str(tmp_path / "secure-data"))
+    monkeypatch.setenv("APP_ORIGIN", "https://testserver")
+    monkeypatch.setenv("SECURE_COOKIES", "true")
+    monkeypatch.setenv("ADMIN_TOKEN", "test-admin-token")
+    monkeypatch.setenv("DEFAULT_CLIENT_REDIRECT_URIS", "")
+    app = create_app(Settings.from_env())
+    with TestClient(app, base_url="https://testserver") as secure_client:
+        created = secure_client.post(
+            "/api/auth/register",
+            json={"name": "Secure User", "email": "secure@example.com", "password": "correct horse"},
+        )
+        assert created.status_code == 201, created.text
+        cookie = created.headers["set-cookie"].lower()
+        assert "httponly" in cookie
+        assert "secure" in cookie
+        assert "samesite=lax" in cookie
+
+
 def test_password_change_revokes_other_sessions(client, user):
     other = TestClient(client.app)
     with other:
