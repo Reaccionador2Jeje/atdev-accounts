@@ -82,6 +82,22 @@ accounts.tudominio.com {
 }
 ```
 
+## Importante: persistencia en Render
+
+El blueprint actual usa el plan gratuito y guarda SQLite y la clave OIDC en
+`DATA_DIR=/data`. **El disco del servicio gratuito de Render es efímero**:
+un reinicio, redeploy o reemplazo de instancia puede borrar cuentas, sesiones,
+clientes OAuth y la clave de firma. Además, el servicio gratuito puede entrar
+en suspensión y tardar en responder al primer acceso.
+
+Para un servicio de cuentas real, no uses ese almacenamiento efímero como base
+de datos de producción. Configura un almacenamiento persistente montado en
+`/data` (requiere un plan compatible con disco persistente) o migra SQLite a
+una base de datos persistente antes de depender del servicio. Conserva también
+la clave RSA de OIDC: regenerarla invalida los tokens firmados con la clave
+anterior. El endpoint `/healthz` comprueba ahora que SQLite está accesible y
+que el esquema de usuarios responde.
+
 ## Configuración
 
 Todas las variables son opcionales salvo `ADMIN_TOKEN` en producción.
