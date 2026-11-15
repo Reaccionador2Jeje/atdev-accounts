@@ -328,6 +328,10 @@ Cubren registro/login, sesiones, API keys, CSRF, borrado de cuenta, flujo OIDC c
 
 Proyecto privado de AtDev. Ajusta la licencia según tus necesidades.
 
+## Android SSO integration
+
+The public OIDC client for Memingo IDE for Android is registered in the Render blueprint as `memingo-ide-android`. Its callback URI, PKCE requirements, scopes, and native-app flow are documented in [MEMINGO_ANDROID_OIDC.md](docs/MEMINGO_ANDROID_OIDC.md).
+
 ## Walletie identity roadmap
 
 AtDev Accounts is the target OIDC/SSO provider for future Walletie-wide identity, but Walletie V1 currently accepts AtDev Cloud HS256 tokens only. See [the Walletie identity roadmap](docs/WALLETIE_INTEGRATION.md).
