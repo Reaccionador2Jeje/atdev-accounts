@@ -24,11 +24,14 @@ FRONTEND_FILES = {
     "style.css": "text/css; charset=utf-8",
 }
 
+# FastAPI's Swagger UI uses jsDelivr for its JavaScript and stylesheet.
+# Keep the policy limited to that CDN and the inline bootstrap script generated
+# by FastAPI; the app's own frontend remains restricted to same-origin assets.
 CSP = (
     "default-src 'self'; "
-    "script-src 'self'; "
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-    "font-src 'self' https://fonts.gstatic.com; "
+    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
+    "font-src 'self' https://fonts.gstatic.com data:; "
     "img-src 'self' data:; "
     "connect-src 'self'; "
     "base-uri 'self'; "
